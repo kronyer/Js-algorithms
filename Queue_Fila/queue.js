@@ -109,13 +109,3 @@ result.eliminated.forEach((name) => {
   console.log(`${name} was eliminated...`);
 });
 console.log(`The winner is: ${result.winner}`);
-
-function palindromeChecker(word) {
-  if (
-    word === undefined ||
-    word === null ||
-    (word !== null && word.length === 0)
-  ) {
-    return false;
-  }
-}
