@@ -74,3 +74,48 @@ console.log(queue.dequeue());
 console.log(queue.dequeue());
 console.log(queue.toString());
 console.log("______________________________");
+
+function hotPotato(elementsList, num) {
+  const queue = new Queue();
+  const eliminatedList = [];
+
+  for (let i = 0; i < elementsList.length; i++) {
+    queue.enqueue(elementsList[i]);
+  }
+  while (queue.size() > 1) {
+    for (let i = 0; i < num; i++) {
+      queue.enqueue(queue.dequeue());
+    }
+    eliminatedList.push(queue.dequeue());
+  }
+  return {
+    eliminated: eliminatedList,
+    winner: queue.dequeue(),
+  };
+}
+
+const names = [
+  "Pedro",
+  "Pietra",
+  "Mingau",
+  "Alfred",
+  "Pepeu",
+  "Daisy",
+  "Marujo",
+  "Itamar",
+];
+const result = hotPotato(names, 7);
+result.eliminated.forEach((name) => {
+  console.log(`${name} was eliminated...`);
+});
+console.log(`The winner is: ${result.winner}`);
+
+function palindromeChecker(word) {
+  if (
+    word === undefined ||
+    word === null ||
+    (word !== null && word.length === 0)
+  ) {
+    return false;
+  }
+}
