@@ -28,11 +28,8 @@ export default class LinkedList {
       if (index === 0) {
         this.head = current.next;
       } else {
-        let previous;
-        for (let i = 0; i < index; i++) {
-          previous = current;
-          current = current.next;
-        }
+        const previous = this.getElementAt(index - 1);
+        current = previous.next;
         previous.next = current.next;
       }
       this.count--;
