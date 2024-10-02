@@ -47,7 +47,20 @@ class HashTable {
         return false;
     }
 
+    toString() {
+        if (this.isEmpty()) {
+            return '';
+        }
+        const keys = Object.keys(this.table);
+        let objString = `{${keys[0]} => ${this.table[keys[0]]}}`;
+        for (let i = 1; i < keys.length; i++) {
+            objString = `${objString}, {${keys[i]} => ${this.table[keys[i]]}}`;
+        }
+        return objString;
+    }
+
 }
+
 
 const hash = new HashTable();
 hash.put('Gandalf', 'gand@gmail.com');
@@ -61,3 +74,4 @@ console.log(hash.get('Gandalf'));
 console.log(hash.get('Pedro'));
 hash.remove('Gandalf');
 console.log(hash.get('Gandalf'));
+
