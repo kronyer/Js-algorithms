@@ -148,6 +148,35 @@ export default class BinarySearchTree {
         }
 }
 
+class AVLTree extends BinarySearchTree {
+    constructor(compareFn = defaultCompare) {
+        super(compareFn);
+        this.compareFn = compareFn;
+        this.root = null;
+    }
+
+    getNodeHeight(node) {
+        if (node == null) {
+            return -1;
+        }
+        return Math.max(this.getNodeHeight(node.left), this.getNodeHeight(node.right)) + 1;
+    }
+
+    rotationLL(node) {
+        const tmp = node.left;
+        node.left = tmp.right;
+        tmp.right = node;
+        return tmp;
+    }
+
+    rotationRR(node) {
+        const tmp = node.right;
+        node.right = tmp.left;
+        tmp.left = node;
+        return tmp;
+    }
+}
+
 const tree = new BinarySearchTree();   // {20}
 tree.insert(11);   // {21}
 tree.insert(7);   // {22}
