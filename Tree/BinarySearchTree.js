@@ -175,6 +175,235 @@ class AVLTree extends BinarySearchTree {
         tmp.left = node;
         return tmp;
     }
+
+    rotationLR(node) {
+        node.left = this.rotationRR(node.left);
+        return this.rotationLL(node);
+    }
+
+    rotationRL(node) {
+        node.right = this.rotationLL(node.right);
+        return this.rotationRR(node);
+    }
+
+    insert(key) {
+        this.root = this.insertNode(this.root, key);
+    }
+
+    insertNode(node, key){
+        if(node === null)
+            return new Node(key);
+        else if(this.compareFn(key, node.key) === Compare.LESS_THAN){
+            node.left = this.insertNode(node.left, key);
+        }
+        else if(this.compareFn(key, node.key) === Compare.BIGGER_THAN){
+            node.right = this.insertNode(node.right, key);
+        }
+        else
+            return node; // duplicated key
+
+        // verify if tree is balanced
+        const balanceState = this.getBalanceFactor(node);
+        if(balanceState === BalanceFactor.UNBALANCED_LEFT){
+            if(this.compareFn(key, node.left.key) === Compare.LESS_THAN){
+                node = this.rotationLL(node);
+            } else {
+                return this.rotationLR(node);
+            }
+        }
+        if(balanceState === BalanceFactor.UNBALANCED_RIGHT){
+            if(this.compareFn(key, node.right.key) === Compare.BIGGER_THAN){
+                node = this.rotationRR(node);
+            } else {
+                return this.rotationRL(node);
+            }
+        }
+        return node;
+
+    }
+
+    getBalanceFactor(node){
+        const heightDifference = this.getNodeHeight(node.left) - this.getNodeHeight(node.right);
+        switch(heightDifference){
+            case -2:
+                return BalanceFactor.UNBALANCED_RIGHT;
+            case 2:
+                return BalanceFactor.UNBALANCED_LEFT;
+            case 1:
+                return BalanceFactor.SLIGHTLY_UNBALANCED_LEFT;
+            case -1:
+                return BalanceFactor.SLIGHTLY_UNBALANCED_RIGHT;
+            default:
+                return BalanceFactor.BALANCED;
+        }
+    }
+
+    removeNode(node, key){
+        node = super.removeNode(node, key);
+        if(node === null){
+            return node;
+        }
+        // verify if tree is balanced
+        const balanceState = this.getBalanceFactor(node);
+        if(balanceState === BalanceFactor.UNBALANCED_LEFT){
+            const balanceStateLeft = this.getBalanceFactor(node.left);
+            if(balanceStateLeft === BalanceFactor.BALANCED || balanceStateLeft === BalanceFactor.SLIGHTLY_UNBALANCED_LEFT){
+                return this.rotationLL(node);
+            }
+            if(balanceStateLeft === BalanceFactor.SLIGHTLY_UNBALANCED_RIGHT){
+                return this.rotationLR(node.left);
+            }
+        }
+        if(balanceState === BalanceFactor.UNBALANCED_RIGHT){
+            const balanceStateRight = this.getBalanceFactor(node.right);
+            if(balanceStateRight === BalanceFactor.BALANCED || balanceStateRight === BalanceFactor.SLIGHTLY_UNBALANCED_RIGHT){
+                return this.rotationRR(node);
+            }
+            if(balanceStateRight === BalanceFactor.SLIGHTLY_UNBALANCED_LEFT){
+                return this.rotationRL(node.right);
+            }
+        }
+        return node;
+    }
+}
+
+class RedBlackNode extends Node {
+    constructor(key){
+        super(key);
+        this.key = key;
+        this.color = Colors.RED;
+        this.parent = null;
+        this.parent = null;
+    }
+    isRed(){
+        return this.color === Colors.RED;
+    }
+}
+
+class RedBlackTree extends BinarySearchTree{
+    constructor(compareFn = defaultCompare){
+        super(compareFn);
+        this.compareFn = compareFn;
+        this.root = null;
+    }
+
+    insert(key){
+        if(this.root == null){
+            this.root = new this.RedBlackNode(key);
+            this.root.color = Colors.BLACK;
+        } else {
+            const newNode = this.insertNode(this.root, key);
+            this.fixTreeProperties(newNode);
+        }
+    }
+
+    insertNode(node, key){
+        if(this.compareFn(key, node.key) === Compare.LESS_THAN){
+            if(node.left == null){
+                node.left = new this.RedBlackNode(key);
+                node.left.parent = node;
+                return node.left;
+            } else {
+                return this.insertNode(node.left, key);
+            }
+        }
+        if(node.right == null){
+            node.right = new this.RedBlackNode(key);
+            node.right.parent = node;
+            return node.right;
+        } else {
+            return this.insertNode(node.right, key);
+        }
+    }
+
+    fixTreeProperties(node){
+        while(node && node.parent && node.parent.color.isRed() && node.color !== Colors.BLACK){
+            let parent = node.parent;
+            const grandParent = parent.parent;
+            // case A
+            if(grandParent && grandParent.left === parent){
+                const uncle = grandParent.right;
+                if(uncle && uncle.color === Colors.RED){
+                    grandParent.color = Colors.RED;
+                    parent.color = Colors.BLACK;
+                    uncle.color = Colors.BLACK;
+                    node = grandParent;
+                } else {
+                    // case B
+                    if(node === parent.right){
+                        this.rotationRR(parent);
+                        node = parent;
+                        parent = node.parent;
+                    }
+                    // case C
+                    this.rotationLL(grandParent);
+                    parent.color = Colors.BLACK;
+                    grandParent.color = Colors.RED;
+                    node = parent;
+                }
+            } else {
+                // case D
+                if(grandParent && grandParent.right === parent){
+                    const uncle = grandParent.left;
+                    if(uncle && uncle.color === Colors.RED){
+                        grandParent.color = Colors.RED;
+                        parent.color = Colors.BLACK;
+                        uncle.color = Colors.BLACK;
+                        node = grandParent;
+                    } else {
+                        // case E
+                        if(node === parent.left){
+                            this.rotationLL(parent);
+                            node = parent;
+                            parent = node.parent;
+                        }
+                        // case F
+                        this.rotationRR(grandParent);
+}
+                }
+            }
+        }
+    }
+
+    rotationLL(node){
+        const tmp = node.left;
+        node.left = tmp.right;
+        if(tmp.right && tmp.right.key){
+            tmp.right.parent = node;
+        }
+        tmp.parent = node.parent;
+        if(!node.parent){
+            this.root = tmp;
+        } else {
+            if(node === node.parent.left){
+                node.parent.left = tmp;
+            } else {
+                node.parent.right = tmp;
+            }
+        }
+        tmp.right = node;
+        node.parent = tmp;
+    }
+
+    rotationRR(node){
+        const tmp = node.right;
+        node.right = tmp.left;
+        if(tmp.left && tmp.left.key){
+            tmp.left.parent = node;
+        }
+        tmp.parent = node.parent;
+        if(!node.parent){
+            this.root = tmp;
+        } else {
+            if(node === node.parent.left){
+                node.parent.left = tmp;
+            } else {
+                node.parent.right = tmp;
+            }
+        }
+        tmp.left = node;
+        node.parent = tmp;
+    }
 }
 
 const tree = new BinarySearchTree();   // {20}
