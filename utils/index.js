@@ -48,9 +48,7 @@ export function reverseCompare(compareFn) {
   return (a, b) => compareFn(b, a);
 }
 
-export function reverseCompare(compareFn) {
-  return (a, b) => compareFn(b, a);
-}
+
 
 export function defaultDiff(a, b) {
   return Number(a) - Number(b);
