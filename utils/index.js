@@ -38,7 +38,7 @@ export function defaultToString(item) {
   return item.toString();
 }
 
-function swap(array, a, b) {
+export function swap(array, a, b) {
   const temp = array[a];
   array[a] = array[b];
   array[b] = temp;
@@ -52,4 +52,20 @@ export function reverseCompare(compareFn) {
 
 export function defaultDiff(a, b) {
   return Number(a) - Number(b);
+}
+
+export function createNonSortedArray(size) {
+  const array = [];
+  for (let i = size; i > 0; i--) {
+    array.push(i);
+  }
+  return array;
+}
+
+export function createRandomArray(size, maxValue) {
+  const array = new Array(size);
+  for (let i = 0; i < size; i++) {
+      array[i] = Math.floor(Math.random() * maxValue);
+  }
+  return array;
 }
